@@ -121,14 +121,14 @@ def _get_submodels_for_export_diffusion(
     if not is_torch_greater_or_equal_than_2_1:
         vae_encoder = override_diffusers_2_0_attn_processors(vae_encoder)
     # we return the distribution parameters to be able to recreate it in the decoder
-    vae_encoder.forward = lambda sample: {"latent_parameters": vae_encoder.encode(x=sample)["latent_dist"].parameters}
+    vae_encoder.forward = lambda sample: {"latent_parameters": vae_encoder.encode(x=sample)["latents"]} # LOLOLOLOL
     models_for_export["vae_encoder"] = vae_encoder
 
     # VAE Decoder https://github.com/huggingface/diffusers/blob/v0.11.1/src/diffusers/models/vae.py#L600
     vae_decoder = copy.deepcopy(pipeline.vae)
     if not is_torch_greater_or_equal_than_2_1:
         vae_decoder = override_diffusers_2_0_attn_processors(vae_decoder)
-    vae_decoder.forward = lambda latent_sample: vae_decoder.decode(z=latent_sample)
+    vae_decoder.forward = lambda latent_sample: vae_decoder.decode(x=latent_sample) # LOLOLOL
     models_for_export["vae_decoder"] = vae_decoder
 
     text_encoder_2 = getattr(pipeline, "text_encoder_2", None)
